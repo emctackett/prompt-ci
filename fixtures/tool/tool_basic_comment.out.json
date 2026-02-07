@@ -1,0 +1,1 @@
+open_pr_comment({"owner": "my-org", "repo": "my-repo", "pr_number": 123, "body": "All tests passed!"})

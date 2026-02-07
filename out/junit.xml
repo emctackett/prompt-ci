@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="prompt-ci-eval-suite" tests="20" failures="0" errors="0" skipped="0" time="0">
+    <testcase name="grounding_error_codes" classname="prompt-ci.grounding" time="0"></testcase>
+    <testcase name="grounding_cache_key_fields" classname="prompt-ci.grounding" time="0"></testcase>
+    <testcase name="grounding_default_timeout" classname="prompt-ci.grounding" time="0"></testcase>
+    <testcase name="grounding_replay_mode" classname="prompt-ci.grounding" time="0"></testcase>
+    <testcase name="grounding_provider_values" classname="prompt-ci.grounding" time="0"></testcase>
+    <testcase name="grounding_citation_format" classname="prompt-ci.grounding" time="0"></testcase>
+    <testcase name="grounding_tool_rate_limit" classname="prompt-ci.grounding" time="0"></testcase>
+    <testcase name="grounding_budget_flag" classname="prompt-ci.grounding" time="0"></testcase>
+    <testcase name="schema_valid_assertion" classname="prompt-ci.json_schema" time="0"></testcase>
+    <testcase name="schema_valid_test_case" classname="prompt-ci.json_schema" time="0"></testcase>
+    <testcase name="schema_valid_suite_file" classname="prompt-ci.json_schema" time="0"></testcase>
+    <testcase name="schema_pr_comment_args" classname="prompt-ci.json_schema" time="0"></testcase>
+    <testcase name="schema_valid_metrics_object" classname="prompt-ci.json_schema" time="0"></testcase>
+    <testcase name="schema_valid_tool_call_entry" classname="prompt-ci.json_schema" time="0"></testcase>
+    <testcase name="schema_valid_trace_case" classname="prompt-ci.json_schema" time="0"></testcase>
+    <testcase name="schema_assertion_with_weight" classname="prompt-ci.json_schema" time="0"></testcase>
+    <testcase name="tool_basic_comment" classname="prompt-ci.tool" time="0"></testcase>
+    <testcase name="tool_line_comment" classname="prompt-ci.tool" time="0"></testcase>
+    <testcase name="tool_forbidden_secret" classname="prompt-ci.tool" time="0"></testcase>
+    <testcase name="tool_rate_limit_behavior" classname="prompt-ci.tool" time="0"></testcase>
+  </testsuite>
+</testsuites>

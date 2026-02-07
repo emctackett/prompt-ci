@@ -1,0 +1,1 @@
+The maximum number of calls allowed to open_pr_comment per suite run is 30 [doc:tools#c4]. Exceeding this triggers PC008.

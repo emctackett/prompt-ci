@@ -1,0 +1,1 @@
+{"id": "test_login", "prompt": "How does the authentication system work?", "assertions": [{"type": "exact_match", "expected": "success"}]}

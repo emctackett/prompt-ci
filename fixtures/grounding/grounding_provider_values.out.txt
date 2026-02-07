@@ -1,0 +1,1 @@
+The valid values for the --provider flag are: openai, anthropic, local, and mock [doc:cli#c1]. Each is an LLM backend.

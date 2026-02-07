@@ -1,0 +1,1 @@
+{"tool_name": "open_pr_comment", "args": {"owner": "dev-team", "repo": "api", "pr_number": 10, "body": "Fixed"}, "latency_ms": 250, "timestamp": "2024-01-15T10:30:00Z", "result": {"comment_id": 99999, "url": "https://example.com/comment/99999"}}

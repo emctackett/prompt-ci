@@ -1,0 +1,1 @@
+The default value for the --budget flag is 100000 millicents which equals $1.00 [doc:cli#c3].

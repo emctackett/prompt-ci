@@ -1,0 +1,122 @@
+[
+  {
+    "id": "grounding_error_codes",
+    "status": "PASS",
+    "validator": "grounding",
+    "duration_ms": 0
+  },
+  {
+    "id": "grounding_cache_key_fields",
+    "status": "PASS",
+    "validator": "grounding",
+    "duration_ms": 0
+  },
+  {
+    "id": "grounding_default_timeout",
+    "status": "PASS",
+    "validator": "grounding",
+    "duration_ms": 0
+  },
+  {
+    "id": "grounding_replay_mode",
+    "status": "PASS",
+    "validator": "grounding",
+    "duration_ms": 0
+  },
+  {
+    "id": "grounding_provider_values",
+    "status": "PASS",
+    "validator": "grounding",
+    "duration_ms": 0
+  },
+  {
+    "id": "grounding_citation_format",
+    "status": "PASS",
+    "validator": "grounding",
+    "duration_ms": 0
+  },
+  {
+    "id": "grounding_tool_rate_limit",
+    "status": "PASS",
+    "validator": "grounding",
+    "duration_ms": 0
+  },
+  {
+    "id": "grounding_budget_flag",
+    "status": "PASS",
+    "validator": "grounding",
+    "duration_ms": 0
+  },
+  {
+    "id": "schema_valid_assertion",
+    "status": "PASS",
+    "validator": "json_schema",
+    "duration_ms": 0
+  },
+  {
+    "id": "schema_valid_test_case",
+    "status": "PASS",
+    "validator": "json_schema",
+    "duration_ms": 0
+  },
+  {
+    "id": "schema_valid_suite_file",
+    "status": "PASS",
+    "validator": "json_schema",
+    "duration_ms": 0
+  },
+  {
+    "id": "schema_pr_comment_args",
+    "status": "PASS",
+    "validator": "json_schema",
+    "duration_ms": 0
+  },
+  {
+    "id": "schema_valid_metrics_object",
+    "status": "PASS",
+    "validator": "json_schema",
+    "duration_ms": 0
+  },
+  {
+    "id": "schema_valid_tool_call_entry",
+    "status": "PASS",
+    "validator": "json_schema",
+    "duration_ms": 0
+  },
+  {
+    "id": "schema_valid_trace_case",
+    "status": "PASS",
+    "validator": "json_schema",
+    "duration_ms": 0
+  },
+  {
+    "id": "schema_assertion_with_weight",
+    "status": "PASS",
+    "validator": "json_schema",
+    "duration_ms": 0
+  },
+  {
+    "id": "tool_basic_comment",
+    "status": "PASS",
+    "validator": "tool",
+    "duration_ms": 0
+  },
+  {
+    "id": "tool_line_comment",
+    "status": "PASS",
+    "validator": "tool",
+    "duration_ms": 0
+  },
+  {
+    "id": "tool_forbidden_secret",
+    "status": "PASS",
+    "validator": "tool",
+    "duration_ms": 0
+  },
+  {
+    "id": "tool_rate_limit_behavior",
+    "status": "PASS",
+    "validator": "tool",
+    "duration_ms": 0
+  }
+]

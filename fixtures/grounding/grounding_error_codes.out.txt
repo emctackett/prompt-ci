@@ -1,0 +1,1 @@
+The exit code for error PC003 is 3 [doc:glossary#c4], meaning PROVIDER_AUTH_FAILED occurs when provider credentials are missing or invalid [doc:glossary#c6]. Exit immediately with code 3.

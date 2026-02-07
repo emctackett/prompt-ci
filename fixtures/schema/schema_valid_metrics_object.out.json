@@ -1,0 +1,1 @@
+{"total_latency_ms": 5000, "total_input_tokens": 1000, "total_output_tokens": 500, "total_cost_millicents": 150, "cache_hit_rate": 0.75, "p50_latency_ms": 200, "p99_latency_ms": 800}

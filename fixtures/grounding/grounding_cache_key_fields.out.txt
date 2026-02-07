@@ -1,0 +1,1 @@
+The caching key in prompt-ci is computed from exactly 4 fields: provider, model, prompt, and tools_hash [doc:tracing#c2]. Hash uses SHA-256.

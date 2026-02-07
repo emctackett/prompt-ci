@@ -1,0 +1,381 @@
+docs:
+  - id: glossary
+    title: Glossary
+    chunks:
+      - id: c1
+        text: |-
+          An Eval Suite is a YAML file with extension ".suite.yaml" containing one or more Test Cases.
+          Each suite MUST have a top-level "name" field (string, 1-64 characters) and a "cases" array.
+          A Test Case is an object with required fields: "id" (string matching ^[a-z0-9_]{1,32}$),
+          "prompt" (string, 1-8000 characters), and "assertions" (array of 1-20 Assertion objects).
+          An Assertion defines a condition that the model response MUST satisfy. Supported assertion
+          types are: "exact_match", "contains", "regex", "json_schema", "semantic_similarity", and
+          "llm_judge". Each assertion object MUST include "type" (one of the six values) and "expected"
+          (the value to compare against). The "weight" field is optional, defaults to 1.0, and MUST
+          be a float between 0.0 and 10.0 inclusive. Citations use format [doc:<doc_id>#<chunk_id>],
+          for example [doc:glossary#c1] references this chunk.
+
+      - id: c2
+        text: |-
+          A Provider is an LLM backend identified by a string enum: "openai", "anthropic", "local",
+          or "mock". The provider determines which API client is instantiated. A Model is a string
+          identifier passed to the provider, such as "gpt-4o" or "claude-sonnet-4-20250514". The Model
+          string MUST NOT exceed 64 characters. A Trace is a JSON file capturing all LLM interactions
+          during an eval run. The trace file MUST be named "trace.json" and placed in the output
+          directory. A Run is a single execution of an eval suite, identified by a UUID v4 stored
+          in the trace as "run_id". Each Run produces exactly three artifacts: "junit.xml", "report.html",
+          and "trace.json". The HTML report MUST include a summary table with columns: case_id,
+          status, latency_ms, and token_count. Status values are "pass", "fail", or "error".
+
+      - id: c3
+        text: |-
+          Citations MUST use the format [doc:<doc_id>#<chunk_id>] where doc_id is one of: glossary,
+          cli, gha, tools, tracing. The chunk_id MUST be c1 through c6. Example citations:
+          [doc:glossary#c1] refers to the eval suite definition. [doc:cli#c2] refers to output flags.
+          [doc:gha#c3] refers to YAML format requirements. [doc:tools#c2] refers to the open_pr_comment
+          tool schema. [doc:tracing#c2] refers to the caching key definition. All documentation
+          consumers MUST validate citations against this pattern: ^\[doc:(glossary|cli|gha|tools|tracing)#c[1-6]\]$.
+          Invalid citations MUST trigger error code PC006. When multiple sources support a claim,
+          list all citations comma-separated within brackets, for example [doc:cli#c1, doc:cli#c2].
+          SHOULD prefer the most specific chunk when multiple chunks contain relevant information.
+
+      - id: c4
+        text: |-
+          Error code PC001: "SUITE_NOT_FOUND" occurs when the specified suite file does not exist.
+          Remediation: verify the --suite path is correct and the file has extension ".suite.yaml".
+          Error code PC002: "INVALID_YAML" occurs when the suite file contains malformed YAML syntax.
+          Remediation: run a YAML linter, check for tab characters (tabs are forbidden, use spaces),
+          and ensure proper indentation of 2 spaces per level. Error code PC003: "PROVIDER_AUTH_FAILED"
+          occurs when provider credentials are missing or invalid. Remediation: for "openai" provider,
+          set OPENAI_API_KEY environment variable; for "anthropic" provider, set ANTHROPIC_API_KEY;
+          for "local" provider, ensure LOCAL_MODEL_PATH points to a valid model directory. The "mock"
+          provider requires no credentials. MUST NOT continue execution after PC003; exit immediately
+          with code 3.
+
+      - id: c5
+        text: |-
+          Error code PC004: "ASSERTION_FAILED" occurs when one or more assertions do not pass.
+          Remediation: review the trace.json file to see actual model outputs versus expected values.
+          Error code PC005: "TIMEOUT_EXCEEDED" occurs when a test case exceeds the --timeout value.
+          Remediation: increase --timeout or simplify the prompt to reduce response generation time.
+          The default timeout is 30000 milliseconds. Error code PC006: "INVALID_CITATION" occurs
+          when a citation does not match the required format. Remediation: ensure citations follow
+          [doc:<doc_id>#<chunk_id>] pattern exactly, with valid doc_id and chunk_id values.
+          Error code PC007: "BUDGET_EXCEEDED" occurs when cumulative token cost exceeds --budget.
+          Remediation: reduce the number of test cases, use a cheaper model, or increase --budget.
+          MUST halt immediately when PC007 triggers; partial results are still written.
+
+      - id: c6
+        text: |-
+          Error code PC008: "SCHEMA_VIOLATION" occurs when the open_pr_comment tool receives
+          arguments not conforming to its JSON schema. Remediation: validate arguments against
+          the schema defined in [doc:tools#c2] before invocation. Every error code MUST be logged
+          with ISO 8601 timestamp, error code, and human-readable message. The log format is:
+          "{timestamp} [{code}] {message}". SHOULD include stack traces for PC002 and PC008 only.
+          MUST NOT include API keys or secrets in any error output. The exit code mapping is:
+          PC001=1, PC002=2, PC003=3, PC004=4, PC005=5, PC006=6, PC007=7, PC008=8. When multiple
+          errors occur, the highest exit code takes precedence. SHOULD aggregate all PC004 errors
+          before exiting rather than failing on the first assertion failure.
+
+  - id: cli
+    title: CLI Reference
+    chunks:
+      - id: c1
+        text: |-
+          The prompt-ci CLI is invoked as "prompt-ci run [flags]". The --suite flag specifies the
+          path to a suite file; it is required and has no default. The path MUST end with ".suite.yaml".
+          The --provider flag selects the LLM provider; valid values are "openai", "anthropic",
+          "local", "mock"; default is "openai". The --model flag specifies which model to use;
+          default is "gpt-4o" when provider is "openai", "claude-sonnet-4-20250514" when provider is
+          "anthropic", and "default" for "local" and "mock". MUST NOT specify a model incompatible
+          with the chosen provider. When --provider is "mock", all LLM calls return the string
+          "MOCK_RESPONSE" with latency of exactly 0 milliseconds and token_count of 10.
+
+      - id: c2
+        text: |-
+          The --output flag sets the directory for generated artifacts; default is "./prompt-ci-output".
+          The directory is created if it does not exist. MUST have write permissions to the output
+          directory. The --format flag controls JUnit output style; valid values are "junit4" and
+          "junit5"; default is "junit5". The --timeout flag sets maximum milliseconds per test case;
+          default is 30000; minimum is 1000; maximum is 300000. Values outside this range trigger
+          error PC002. The --parallel flag sets concurrent test case execution count; default is 1;
+          maximum is 16. When --parallel exceeds 1, test case order in JUnit output is non-deterministic
+          but results remain reproducible given identical inputs. SHOULD set --parallel=1 when
+          debugging to ensure deterministic ordering.
+
+      - id: c3
+        text: |-
+          The --retry flag sets the number of retry attempts for transient failures; default is 0;
+          maximum is 5. Retries apply only to provider network errors, not assertion failures.
+          The --verbose flag enables detailed logging to stderr; default is false. When enabled,
+          logs include request/response payloads (with API keys redacted). The --budget flag sets
+          maximum cumulative token cost in millicents (1/1000 of a cent); default is 100000 (equals
+          $1.00); set to 0 for unlimited. When budget is exceeded, error PC007 is raised. The
+          --dry-run flag validates suite syntax without executing LLM calls; default is false.
+          MUST NOT make any API calls when --dry-run is true. Dry run still writes junit.xml with
+          all cases marked as "skipped" and produces an empty trace.json containing only metadata.
+
+      - id: c4
+        text: |-
+          When conflicting flags are provided, resolution follows this precedence order: explicit
+          command-line flags override environment variables; environment variables override config
+          file values; config file values override built-in defaults. The config file path is
+          ".prompt-ci.yaml" in the current directory or any parent directory up to the filesystem
+          root. Environment variable names use the pattern PROMPT_CI_<FLAG_UPPER>, for example
+          PROMPT_CI_PROVIDER, PROMPT_CI_TIMEOUT. For --provider and --model conflicts specifically:
+          if --model is specified but incompatible with --provider, error PC002 is raised with
+          message "Model '{model}' is not compatible with provider '{provider}'". The CLI MUST NOT
+          silently ignore incompatible combinations. SHOULD warn when environment variables are
+          overridden by command-line flags.
+
+      - id: c5
+        text: |-
+          Missing required environment variables trigger specific behaviors. When OPENAI_API_KEY is
+          missing and --provider=openai, error PC003 is raised immediately before any file I/O.
+          When ANTHROPIC_API_KEY is missing and --provider=anthropic, error PC003 is raised.
+          When LOCAL_MODEL_PATH is missing and --provider=local, error PC003 is raised with message
+          "LOCAL_MODEL_PATH environment variable is required for local provider". The --provider=mock
+          option requires no environment variables and SHOULD be used for testing suite syntax.
+          MUST validate environment variables before loading suite file to fail fast. When
+          --verbose is enabled, log which configuration source each flag value originated from:
+          "cli", "env", "config", or "default". This aids debugging configuration precedence issues.
+
+      - id: c6
+        text: |-
+          Exit codes follow a strict mapping. Exit 0 indicates all test cases passed with no errors.
+          Exit 1-8 maps to error codes PC001-PC008 as defined in [doc:glossary#c6]. Exit 9 indicates
+          an unexpected internal error; this SHOULD be reported as a bug. Exit 130 indicates
+          user interruption via SIGINT (Ctrl+C). When interrupted, partial results MUST be written
+          before exiting. The CLI MUST NOT produce exit codes outside the set {0, 1, 2, 3, 4, 5,
+          6, 7, 8, 9, 130}. Standard output contains only the final summary line in format:
+          "prompt-ci: {passed}/{total} cases passed". Standard error contains all logs when
+          --verbose is enabled. MUST NOT write logs to stdout. Piping stdout to other tools is
+          explicitly supported; the summary format is stable and will not change between minor versions.
+
+  - id: gha
+    title: GitHub Action
+    chunks:
+      - id: c1
+        text: |-
+          The GitHub Action is named "prompt-ci/run" and MUST be referenced in workflows as
+          "uses: prompt-ci/run@v1". The action accepts the following inputs: "suite" (required,
+          string, path to suite file relative to repository root), "provider" (optional, string,
+          default "openai"), "model" (optional, string, provider-specific default applies),
+          "timeout" (optional, number, default 30000), "parallel" (optional, number, default 1),
+          "budget" (optional, number, default 100000). Inputs map directly to CLI flags with
+          identical semantics. The action MUST NOT expose --verbose or --dry-run as inputs; these
+          are always false in CI context. Secrets MUST be passed via environment variables, not
+          inputs. Example: "env: OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}".
+
+      - id: c2
+        text: |-
+          The action produces three outputs: "junit_path" (string, path to junit.xml), "report_path"
+          (string, path to report.html), "trace_path" (string, path to trace.json). All paths are
+          relative to the GitHub workspace. The action also sets "passed_count" (number) and
+          "failed_count" (number) as outputs. The action always exits with the same codes as the
+          CLI: 0 for success, 1-8 for PC001-PC008, 9 for internal error. GitHub Actions treats
+          non-zero exit as failure. To continue on test failures, wrap the step in an if condition
+          checking "steps.<step_id>.outcome". SHOULD use "continue-on-error: true" only when
+          intentionally ignoring failures. MUST NOT suppress PC003 (auth failure) with continue-on-error.
+
+      - id: c3
+        text: |-
+          Suite files MUST be valid YAML conforming to YAML 1.2 specification. The top-level keys
+          are: "name" (required, string), "description" (optional, string, max 500 chars), "cases"
+          (required, array). Each case object MUST have: "id" (string, pattern ^[a-z0-9_]{1,32}$),
+          "prompt" (string), "assertions" (array). Assertion objects MUST have: "type" (enum),
+          "expected" (string or object depending on type). For type "json_schema", "expected" is
+          a JSON Schema object. For type "semantic_similarity", an additional "threshold" field
+          is required (float, 0.0-1.0). MUST NOT use YAML aliases (&anchor/*alias) in suite files;
+          they trigger PC002. MUST use UTF-8 encoding without BOM. Line endings MUST be LF (Unix
+          style); CRLF triggers PC002 with message "Windows line endings detected, convert to LF".
+
+      - id: c4
+        text: |-
+          Invalid YAML suite format triggers error PC002 with specific sub-messages. Missing "name"
+          field: "Suite file missing required field 'name' at root level". Missing "cases" array:
+          "Suite file missing required field 'cases' at root level". Empty "cases" array: "Suite
+          file 'cases' array must contain at least one test case". Invalid case id: "Case id
+          '{id}' does not match pattern ^[a-z0-9_]{1,32}$". Duplicate case id: "Duplicate case id
+          '{id}' found; case ids must be unique within a suite". Invalid assertion type: "Unknown
+          assertion type '{type}'; valid types are: exact_match, contains, regex, json_schema,
+          semantic_similarity, llm_judge". The validator MUST report all errors found, not just
+          the first. SHOULD provide line numbers in error messages when available.
+
+      - id: c5
+        text: |-
+          Example workflow using prompt-ci/run action. Create file ".github/workflows/eval.yaml"
+          with contents: "name: LLM Eval" on trigger "on: [push, pull_request]", job "eval" runs
+          on "ubuntu-latest". Steps: checkout repository, run prompt-ci/run@v1 with input suite
+          set to "tests/main.suite.yaml" and env OPENAI_API_KEY from secrets. Add step to upload
+          artifacts using actions/upload-artifact@v4 with path "${{ steps.eval.outputs.report_path }}".
+          MUST specify step id to reference outputs. The action caches model responses by default;
+          to disable, set input "cache: false". Cache is stored in ".prompt-ci-cache" directory
+          within the workspace. SHOULD add ".prompt-ci-cache" to ".gitignore" to avoid committing
+          cache files. Cache entries expire after 7 days.
+
+      - id: c6
+        text: |-
+          Budget overrun during GitHub Action execution triggers specific behavior. When cumulative
+          token cost exceeds the "budget" input, error PC007 is raised. The action writes partial
+          results: junit.xml contains all completed test cases (passed/failed) plus remaining
+          cases marked as "skipped" with skip message "Budget exceeded before execution". The
+          report.html includes a banner: "Run terminated: budget limit of {budget} millicents
+          exceeded at {actual} millicents". The trace.json contains a "budget_exceeded" field set
+          to true and "final_cost_millicents" with the actual cost. The action exits with code 7.
+          MUST NOT retry cases after budget exceeded. SHOULD configure budget 20% higher than
+          expected to account for response length variance. Error PC007 is non-recoverable within
+          a single run; start a new run with higher budget.
+
+  - id: tools
+    title: Tool Contracts
+    chunks:
+      - id: c1
+        text: |-
+          Tools are external capabilities that the LLM can invoke during evaluation. Tool definitions
+          follow a strict contract specifying name, description, argument schema, and calling rules.
+          Each tool MUST have a unique name matching pattern ^[a-z_]{1,32}$. The description field
+          MUST be 10-200 characters and describe when to use the tool. The args field contains a
+          JSON Schema (draft 2020-12) defining required and optional parameters. The returns field
+          describes the response format. Tools are registered in the suite file under a top-level
+          "tools" array. Each tool object MUST have fields: "name", "description", "args", "returns".
+          SHOULD limit suites to at most 5 tool definitions to constrain prompt size. The tool
+          invocation protocol uses JSON-RPC 2.0 over stdin/stdout with the evaluator process.
+
+      - id: c2
+        text: |-
+          The open_pr_comment tool posts a comment to a GitHub pull request. Name: "open_pr_comment".
+          Description: "Posts a comment to the specified GitHub pull request". Args schema:
+          {"type": "object", "properties": {"owner": {"type": "string", "pattern": "^[a-zA-Z0-9_-]{1,39}$"},
+          "repo": {"type": "string", "pattern": "^[a-zA-Z0-9._-]{1,100}$"}, "pr_number": {"type":
+          "integer", "minimum": 1, "maximum": 999999999}, "body": {"type": "string", "minLength": 1,
+          "maxLength": 65536}, "file_path": {"type": "string", "maxLength": 1024}, "line": {"type":
+          "integer", "minimum": 1}}, "required": ["owner", "repo", "pr_number", "body"],
+          "additionalProperties": false}. Returns: {"comment_id": "integer", "url": "string"}.
+          MUST NOT allow additionalProperties; schema violations trigger PC008.
+
+      - id: c3
+        text: |-
+          Calling rule 1: The tool MUST only be invoked when GITHUB_TOKEN environment variable is
+          set and has "pull_requests:write" scope. Missing or insufficient permissions raise PC003
+          with message "GITHUB_TOKEN missing or lacks pull_requests:write scope". Calling rule 2:
+          The pr_number MUST reference an existing, open pull request. Attempting to comment on
+          a closed or merged PR returns error response {"error": "PR_CLOSED", "message": "Pull
+          request is not open"}. The evaluator does not raise a PC error for this; it is a tool
+          execution error logged in trace.json. Calling rule 3: The body field MUST NOT contain
+          strings matching patterns for API keys or tokens (regex: (?i)(api[_-]?key|token|secret|password)\s*[:=]\s*\S+).
+          Violations trigger PC008 with message "Potential secret detected in comment body".
+
+      - id: c4
+        text: |-
+          Calling rule 4: When file_path and line are provided, the tool creates a review comment
+          on that specific line. The file_path MUST exist in the PR diff; otherwise error response
+          {"error": "FILE_NOT_IN_DIFF", "message": "File path not found in pull request diff"}.
+          The line number MUST be within the changed lines of that file; otherwise error response
+          {"error": "LINE_NOT_CHANGED", "message": "Line not in changed portion of file"}.
+          Calling rule 5: Rate limiting applies. Maximum 30 calls to open_pr_comment per suite
+          run. Exceeding this limit triggers PC008 with message "Tool rate limit exceeded: maximum
+          30 calls per run for open_pr_comment". The rate limit counter resets with each new run_id.
+          SHOULD batch related comments where possible to avoid hitting rate limits.
+
+      - id: c5
+        text: |-
+          Tool response format follows JSON-RPC 2.0. Successful responses: {"jsonrpc": "2.0",
+          "result": {"comment_id": 12345, "url": "...commit/comment/12345"}, "id": 1}. Error responses:
+          {"jsonrpc": "2.0", "error": {"code": -32000, "message": "PR_CLOSED", "data": {...}}, "id": 1}.
+          The trace.json file records all tool calls in a "tool_calls" array. Each entry contains:
+          "tool_name" (string), "args" (object), "result" (object or null), "error" (object or null),
+          "latency_ms" (integer), "timestamp" (ISO 8601). MUST log all tool calls even when they
+          fail. Tool call order in trace.json reflects actual execution order, not test case order.
+          When --parallel > 1, tool calls may be interleaved. MUST NOT invoke tools during --dry-run;
+          trace.json "tool_calls" array will be empty.
+
+      - id: c6
+        text: |-
+          Tool error handling follows a strict protocol. Network errors (timeout, connection refused)
+          trigger automatic retry per --retry flag. These are logged with "retry_count" field in
+          trace.json. Permanent errors (4xx HTTP status from tool backend) do not retry and are
+          logged with "permanent": true. After exhausting retries, the test case is marked "error"
+          in junit.xml with error message from the final attempt. Tool argument validation happens
+          before any network call. PC008 is raised for schema violations, detected secrets, or
+          rate limit exceeded. SHOULD validate arguments client-side before transmission to avoid
+          wasted API calls. The tool execution timeout is 10000 milliseconds, separate from the
+          --timeout flag which applies to LLM calls. Tool timeout is not configurable and MUST NOT
+          be exceeded; hung tool calls are terminated after 10000ms.
+
+  - id: tracing
+    title: Tracing & Caching
+    chunks:
+      - id: c1
+        text: |-
+          The trace.json file captures a complete record of an eval run. Root level fields: "run_id"
+          (UUID v4), "started_at" (ISO 8601), "completed_at" (ISO 8601), "suite_name" (string),
+          "suite_hash" (SHA-256 of suite file content), "provider" (string), "model" (string),
+          "cases" (array). Each case object in the trace contains: "case_id" (string), "prompt"
+          (string), "response" (string), "latency_ms" (integer), "input_tokens" (integer),
+          "output_tokens" (integer), "cost_millicents" (integer), "assertions" (array of results),
+          "cache_hit" (boolean). MUST write trace.json atomically; partial writes on interruption
+          are forbidden. Write to a temp file first, then rename. MUST NOT pretty-print trace.json;
+          output is single-line minified JSON to reduce file size.
+
+      - id: c2
+        text: |-
+          The caching key is computed from exactly 4 fields in canonical order: "provider",
+          "model", "prompt", "tools_hash". Canonical serialization: concatenate UTF-8 bytes of
+          each field separated by null byte (0x00), then compute SHA-256. Formula: SHA256(provider
+          + 0x00 + model + 0x00 + prompt + 0x00 + tools_hash). The tools_hash is SHA-256 of the
+          JSON-serialized tools array with keys sorted alphabetically. If no tools are defined,
+          tools_hash is SHA-256 of empty string. Example key computation for provider="openai",
+          model="gpt-4o", prompt="Hello", no tools: SHA256("openai\x00gpt-4o\x00Hello\x00" +
+          SHA256("")). Cache entries are stored in ".prompt-ci-cache/{first2chars}/{full_key}.json".
+          MUST normalize prompt by stripping trailing whitespace before hashing. MUST NOT include
+          timestamp, run_id, or randomness in cache key; these would defeat caching.
+
+      - id: c3
+        text: |-
+          Deterministic replay mode is activated with flag --replay or environment variable
+          PROMPT_CI_REPLAY=true. In replay mode, all LLM calls MUST return cached responses.
+          Cache misses in replay mode trigger error PC005 with message "Replay mode: cache miss
+          for case '{case_id}'". No network calls to LLM providers are permitted during replay.
+          The trace.json in replay mode sets "replay_mode": true and all cases have "cache_hit": true.
+          Replay mode validates that the suite file hash matches the cached suite hash; mismatch
+          triggers PC002 with message "Suite file modified since cache was populated". MUST use
+          replay mode for reproducible CI runs. SHOULD populate cache in a dedicated caching job,
+          then run tests with --replay in parallel jobs.
+
+      - id: c4
+        text: |-
+          Replay mode forbids the following behaviors. MUST NOT make any HTTP requests to LLM
+          provider APIs. MUST NOT make any tool calls; all tool call entries in trace are replayed
+          from cache. MUST NOT generate new run_id; reuse the run_id from the original cached run.
+          MUST NOT update cost tracking; costs are zero in replay mode since no API calls occur.
+          MUST NOT modify cache files during replay; cache directory is treated as read-only.
+          The --budget flag is ignored in replay mode since no costs are incurred. The --retry
+          flag is also ignored since there are no network calls to retry. If any environment
+          variable for provider auth is missing during replay, this is acceptable; auth is not
+          validated when no API calls are made. SHOULD verify cache integrity at startup by
+          checking file checksums.
+
+      - id: c5
+        text: |-
+          Cache invalidation follows specific rules. A cache entry is invalidated when any of the
+          4 cache key fields changes. Model version changes (e.g., "gpt-4o" to "gpt-4o-mini")
+          result in cache miss, triggering new API call in normal mode. Prompt modifications,
+          including whitespace changes after normalization, invalidate the cache entry. Tool
+          definition changes, including reordering of tool array, change tools_hash and invalidate
+          cache. Cache entries have a time-to-live (TTL) of 7 days from creation. Expired entries
+          are treated as cache misses. To force cache refresh, delete the cache directory or use
+          flag --no-cache. MUST NOT use stale cache entries beyond TTL. SHOULD log cache hit/miss
+          ratio in verbose mode: "Cache: {hits}/{total} hits ({percentage}%)".
+
+      - id: c6
+        text: |-
+          Performance metrics are recorded in trace.json under "metrics" object. Fields: "total_latency_ms"
+          (sum of all case latencies), "total_input_tokens" (sum across cases), "total_output_tokens"
+          (sum across cases), "total_cost_millicents" (sum of costs), "cache_hit_rate" (float, 0.0-1.0),
+          "p50_latency_ms" (median case latency), "p99_latency_ms" (99th percentile latency). The
+          report.html displays these metrics in a summary panel. MUST compute p50 and p99 using
+          linear interpolation for accurate percentiles. When all cases are cache hits, latency
+          metrics reflect cached response retrieval time, not original API latency. SHOULD target
+          cache hit rate above 0.8 for CI cost efficiency. MUST NOT include metrics for skipped
+          cases in aggregate calculations; only passed, failed, and error cases contribute.

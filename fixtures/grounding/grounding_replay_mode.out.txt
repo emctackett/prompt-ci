@@ -1,0 +1,1 @@
+Deterministic replay mode is activated with the --replay flag or by setting PROMPT_CI_REPLAY=true [doc:tracing#c3]. Cache miss triggers PC005.

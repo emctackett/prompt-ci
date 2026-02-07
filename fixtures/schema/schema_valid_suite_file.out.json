@@ -1,0 +1,1 @@
+{"name": "my_suite", "cases": [{"id": "case1", "prompt": "Test prompt", "assertions": [{"type": "contains", "expected": "test"}]}]}

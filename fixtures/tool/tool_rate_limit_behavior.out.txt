@@ -1,0 +1,1 @@
+When you exceed the rate limit for open_pr_comment calls, error code PC008 is raised. The limit is 30 calls per suite run. The error message is "Tool rate limit exceeded: maximum 30 calls per run for open_pr_comment".

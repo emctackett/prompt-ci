@@ -1,0 +1,128 @@
+{
+  "suite_name": "prompt-ci-eval-suite",
+  "mode": "fixtures",
+  "started_at": "2026-02-07T11:16:06-05:00",
+  "completed_at": "2026-02-07T11:16:06-05:00",
+  "entries": [
+    {
+      "case_id": "grounding_error_codes",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "grounding_cache_key_fields",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "grounding_default_timeout",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "grounding_replay_mode",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "grounding_provider_values",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "grounding_citation_format",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "grounding_tool_rate_limit",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "grounding_budget_flag",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "schema_valid_assertion",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "schema_valid_test_case",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "schema_valid_suite_file",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "schema_pr_comment_args",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "schema_valid_metrics_object",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "schema_valid_tool_call_entry",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "schema_valid_trace_case",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "schema_assertion_with_weight",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "tool_basic_comment",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "tool_line_comment",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "tool_forbidden_secret",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    },
+    {
+      "case_id": "tool_rate_limit_behavior",
+      "mode": "fixtures",
+      "started_at": "2026-02-07T11:16:06-05:00",
+      "completed_at": "2026-02-07T11:16:06-05:00"
+    }
+  ]
+}

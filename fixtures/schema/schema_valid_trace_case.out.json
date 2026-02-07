@@ -1,0 +1,1 @@
+{"case_id": "test1", "prompt": "Hello", "response": "Hi", "latency_ms": 100, "input_tokens": 5, "output_tokens": 3, "cost_millicents": 1, "assertions": [], "cache_hit": false}
